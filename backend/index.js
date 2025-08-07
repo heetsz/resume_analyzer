@@ -15,7 +15,7 @@ app.use(express.json());
 import cors from 'cors';
 
 app.use(cors({
-  origin: 'http://localhost:5173'  // your frontend URL
+  origin: 'https://resume-analyzer-frontend-1iwb.onrender.com'  // your frontend URL
 }));
 
 const upload = multer({ dest: "uploads/" });
@@ -105,5 +105,5 @@ Context: ${context}`,
 });
 
 app.listen(5000, () => {
-  console.log("Server listening on http://localhost:5000");
+  console.log("Server listening on https://resume-analyzer-frontend-1iwb.onrender.com");
 });
