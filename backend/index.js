@@ -72,7 +72,16 @@ app.post("/query", async (req, res) => {
       return res.status(400).json({ error: "Please upload a resume first" });
     }
 
+    if (!question || typeof question !== "string" || question.trim() === "") {
+      return res.status(400).json({ error: "Question is required" });
+    }
+
     const queryVector = await embeddings.embedQuery(question);
+
+    if (!Array.isArray(queryVector) || queryVector.length === 0) {
+      console.error("Embedding failed or returned empty vector");
+      return res.status(500).json({ error: "Embedding failed" });
+    }
 
     const results = await pineconeIndex.query({
       topK: 10,
@@ -80,9 +89,18 @@ app.post("/query", async (req, res) => {
       includeMetadata: true,
     });
 
+    if (!results.matches || results.matches.length === 0) {
+      console.warn("No matches found in Pinecone");
+    }
+
     const context = results.matches
       .map((match) => match?.metadata?.text || "")
+      .filter(Boolean)
       .join("\n\n---\n\n");
+
+    if (!context || context.trim() === "") {
+      return res.json({ answer: "I could not find the answer in the provided document." });
+    }
 
     History.push({ role: "user", parts: [{ text: question }] });
 
@@ -99,15 +117,19 @@ Context: ${context}`,
       },
     });
 
-    const response = await result.response;
-    const text = await response.text();
+    if (!result || !result.response) {
+      console.error("Gemini API did not return a response");
+      return res.status(500).json({ error: "Gemini API failed" });
+    }
+
+    const text = await result.response.text();
 
     History.push({ role: "model", parts: [{ text }] });
 
     res.json({ answer: text });
   } catch (err) {
     console.error("Query error:", err);
-    res.status(500).json({ error: "Query failed" });
+    res.status(500).json({ error: err.message || "Query failed" });
   }
 });
 
