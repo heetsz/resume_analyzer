@@ -237,13 +237,12 @@ function App() {
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className={`flex items-center p-4 rounded-2xl shadow-lg backdrop-blur-sm border transform transition-all duration-300 ease-in-out animate-in slide-in-from-right-full ${
-                toast.type === "success"
+              className={`flex items-center p-4 rounded-2xl shadow-lg backdrop-blur-sm border transform transition-all duration-300 ease-in-out animate-in slide-in-from-right-full ${toast.type === "success"
                   ? "bg-green-50/90 border-green-200 text-green-800"
                   : toast.type === "error"
-                  ? "bg-red-50/90 border-red-200 text-red-800"
-                  : "bg-blue-50/90 border-blue-200 text-blue-800"
-              }`}
+                    ? "bg-red-50/90 border-red-200 text-red-800"
+                    : "bg-blue-50/90 border-blue-200 text-blue-800"
+                }`}
             >
               <div className="flex items-center space-x-3">
                 {toast.type === "success" && (

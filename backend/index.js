@@ -104,6 +104,9 @@ Context: ${context}`,
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server listening on https://resume-analyzer-frontend-1iwb.onrender.com");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log("Frontend is available at: https://resume-analyzer-frontend-1iwb.onrender.com");
 });
