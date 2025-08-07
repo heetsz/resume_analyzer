@@ -31,7 +31,7 @@ let currentDocs = null;
 let embeddings = null;
 
 // Upload and process PDF
-app.post("https://resume-analyzer-frontend-1iwb.onrender.com/upload", upload.single("resume"), async (req, res) => {
+app.post("/upload", upload.single("resume"), async (req, res) => {
   try {
     const filePath = req.file.path;
 
@@ -64,7 +64,7 @@ app.post("https://resume-analyzer-frontend-1iwb.onrender.com/upload", upload.sin
 });
 
 // Query API
-app.post("https://resume-analyzer-frontend-1iwb.onrender.com/query", async (req, res) => {
+app.post("/query", async (req, res) => {
   try {
     const { question } = req.body;
 
