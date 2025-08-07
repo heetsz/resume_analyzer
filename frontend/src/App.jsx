@@ -44,7 +44,7 @@ function App() {
     formData.append("resume", file);
 
     try {
-      await axios.post("http://localhost:5000/upload", formData);
+      await axios.post("https://resume-analyzer-2wos.onrender.com/upload", formData);
       setUploaded(true);
       showToast("Resume uploaded successfully!", "success");
     } catch (error) {
@@ -63,7 +63,7 @@ function App() {
 
     setIsQuerying(true);
     try {
-      const response = await fetch("http://localhost:5000/query", {
+      const response = await fetch("https://resume-analyzer-2wos.onrender.com/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
