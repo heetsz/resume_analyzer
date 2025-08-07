@@ -66,14 +66,23 @@ app.post("/upload", upload.single("resume"), async (req, res) => {
 // Query API
 app.post("/query", async (req, res) => {
   try {
+    console.log("Received /query request body:", req.body);
+
     const { question } = req.body;
 
     if (!embeddings || !currentDocs) {
+      console.error("Embeddings or documents not initialized");
       return res.status(400).json({ error: "Please upload a resume first" });
     }
 
-    if (!question || typeof question !== "string" || question.trim() === "") {
-      return res.status(400).json({ error: "Question is required" });
+    if (!question) {
+      console.error("Missing 'question' in request body");
+      return res.status(400).json({ error: "Missing 'question' in request body. Example: { \"question\": \"What is the candidate's experience?\" }" });
+    }
+
+    if (typeof question !== "string" || question.trim() === "") {
+      console.error("Invalid 'question' value:", question);
+      return res.status(400).json({ error: "'question' must be a non-empty string" });
     }
 
     const queryVector = await embeddings.embedQuery(question);

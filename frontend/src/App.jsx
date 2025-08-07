@@ -63,23 +63,29 @@ function App() {
 
     setIsQuerying(true);
     try {
+      const payload = { question };
+      console.log("Sending query payload:", payload);
+
       const response = await fetch("https://resume-analyzer-2wos.onrender.com/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         const data = await response.json();
         setResponse(data.answer);
       } else {
-        throw new Error("Query failed");
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.error || "Query failed";
+        showToast(errorMsg, "error");
+        throw new Error(errorMsg);
       }
     } catch (error) {
       console.error("Query failed:", error);
-      showToast("Failed to get response.", "error");
+      showToast(error.message || "Failed to get response.", "error");
     } finally {
       setIsQuerying(false);
     }
