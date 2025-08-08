@@ -113,29 +113,36 @@ app.post("/query", async (req, res) => {
 
     History.push({ role: "user", parts: [{ text: question }] });
 
-    const result = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: History,
-      config: {
-        systemInstruction: `You are a resume analysis expert.
+    try {
+      console.log("Calling Gemini API with context length:", context.length);
+      const result = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: History,
+        config: {
+          systemInstruction: `You are a resume analysis expert.
 You will be given a context from the resume and a user question.
 Answer ONLY based on this context.
 If no answer, say: "I could not find the answer in the provided document.".
 
 Context: ${context}`,
-      },
-    });
+        },
+      });
+      console.log("Gemini API result:", result);
 
-    if (!result || !result.response) {
-      console.error("Gemini API did not return a response");
-      return res.status(500).json({ error: "Gemini API failed" });
+      if (!result || !result.response) {
+        console.error("Gemini API did not return a response. Check API key and model name.");
+        return res.status(500).json({ error: "Gemini API failed. Check API key and model name." });
+      }
+
+      const text = await result.response.text();
+
+      History.push({ role: "model", parts: [{ text }] });
+
+      res.json({ answer: text });
+    } catch (geminiErr) {
+      console.error("Gemini API error:", geminiErr);
+      return res.status(500).json({ error: "Gemini API failed: " + (geminiErr.message || geminiErr) });
     }
-
-    const text = await result.response.text();
-
-    History.push({ role: "model", parts: [{ text }] });
-
-    res.json({ answer: text });
   } catch (err) {
     console.error("Query error:", err);
     res.status(500).json({ error: err.message || "Query failed" });
